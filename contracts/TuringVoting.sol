@@ -127,4 +127,11 @@ contract TuringVoting is ERC20 {
     function votingOff() public onlyAuthorized {
         votingEnabled = false;
     }
+
+    // Function to get the balance of a voter by their name
+    function getBalanceByName(string memory voterName) public view returns (uint256) {
+        address voterAddress = voterNames[voterName];
+        require(voterAddress != address(0), "Invalid voter name!");
+        return balanceOf(voterAddress);
+    }
 }

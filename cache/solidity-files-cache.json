@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/home/bmacerbi/Documents/BlockChain/turingVoting/contracts/TuringVoting.sol": {
-      "lastModificationDate": 1738428669197,
-      "contentHash": "efa6544119e06a97fa37f9e20e09e93f",
+      "lastModificationDate": 1738498934305,
+      "contentHash": "5ed3a77d8d3d91653458cbd50b0245cc",
       "sourceName": "contracts/TuringVoting.sol",
       "solcConfig": {
         "version": "0.8.28",
