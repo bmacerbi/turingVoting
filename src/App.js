@@ -4,7 +4,7 @@ import './App.css';
 import TuringVotingABI from './TuringVoting.json';
 import { Button, TextField, Typography, Container, Box, MenuItem, Select, FormControl, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
-const contractAddress = "0xd72FBb85Cc0c36aC0E476B27f6FBd252bae8624A"; // Replace with your contract address
+const contractAddress = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
 const abi = TuringVotingABI.abi;
 
 function App() {
@@ -22,7 +22,7 @@ function App() {
     "nome1", "nome2", "nome3", "nome4", "nome5",
     "nome6", "nome7", "nome8", "nome9", "nome10",
     "nome11", "nome12", "nome13", "nome14", "nome15",
-    "nome16", "nome17", "nome18", "nome19", "nome20"
+    "nome16", "nome17", "nome18", "nome19"
   ];
 
   useEffect(() => {
@@ -57,17 +57,28 @@ function App() {
     init();
   }, []);
 
-  const fetchVoterBalances = async (contract) => {
+  const fetchVoterBalances = async (contract, voterNames) => {
     const balances = [];
+
     for (const name of voterNames) {
-      try {
-        const balance = await contract.getBalanceByName(name);
-        balances.push({ name, balance: ethers.formatEther(balance) }); // Convert balance to Ether
-      } catch (error) {
-        console.error(`Error fetching balance for ${name}:`, error);
-        balances.push({ name, balance: "N/A" }); // Handle errors gracefully
-      }
+        try {
+            // Call the smart contract function to get the voter's address
+            const nameAddress = await contract.getVoterAddress(name);
+
+            // Ensure the address is valid before fetching balance
+            if (nameAddress === "0x0000000000000000000000000000000000000000") {
+                throw new Error("Invalid address for voter name: " + name);
+            }
+
+            // Fetch balance
+            const balance = await contract.balanceOf(nameAddress);
+            balances.push({ name, balance: ethers.formatEther(balance) });
+        } catch (error) {
+            console.error(`Error fetching balance for ${name}:`, error);
+            balances.push({ name, balance: "N/A" });
+        }
     }
+
     setVoterBalances(balances);
   };
 

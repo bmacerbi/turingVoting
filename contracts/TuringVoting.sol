@@ -21,7 +21,7 @@ contract TuringVoting is ERC20 {
     uint256 private constant TuringUnit = 10**18;
 
     // Array of student addresses
-    address[20] private studentAddresses;
+    address[19] private studentAddresses;
 
     // Modifier to restrict access to authorized users (deployer or teacher)
     modifier onlyAuthorized() {
@@ -72,8 +72,7 @@ contract TuringVoting is ERC20 {
             0x2546BcD3c84621e976D8185a91A922aE77ECEc30,
             0xbDA5747bFD65F08deb54cb465eB87D40e51B197E,
             0xdD2FD4581271e230360230F9337D5c0430Bf44C0,
-            0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199,
-            0xd72FBb85Cc0c36aC0E476B27f6FBd252bae8624A
+            0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199
         ];
 
         // Initialize voter names to addresses
@@ -96,7 +95,6 @@ contract TuringVoting is ERC20 {
         voterNames["nome17"] = 0xbDA5747bFD65F08deb54cb465eB87D40e51B197E;
         voterNames["nome18"] = 0xdD2FD4581271e230360230F9337D5c0430Bf44C0;
         voterNames["nome19"] = 0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199;
-        voterNames["nome20"] = 0xd72FBb85Cc0c36aC0E476B27f6FBd252bae8624A;
     }
 
     // Function to issue tokens (only authorized users can call this)
@@ -127,11 +125,9 @@ contract TuringVoting is ERC20 {
     function votingOff() public onlyAuthorized {
         votingEnabled = false;
     }
-
-    // Function to get the balance of a voter by their name
-    function getBalanceByName(string memory voterName) public view returns (uint256) {
-        address voterAddress = voterNames[voterName];
-        require(voterAddress != address(0), "Invalid voter name!");
-        return balanceOf(voterAddress);
+    
+    // Function to get the address of a voter by their name
+    function getVoterAddress(string memory voterName) public view returns (address) {
+        return voterNames[voterName];
     }
 }
