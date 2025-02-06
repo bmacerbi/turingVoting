@@ -8,12 +8,6 @@ contract TuringVoting is ERC20 {
     address private teacherAddress = 0x502542668aF09fa7aea52174b9965A7799343Df7;
     bool public votingEnabled = true;
 
-    // Mapping to store codinomes (names) to addresses
-    mapping(string => address) private codinomes;
-
-    // Mapping to track if a voter has already voted
-    mapping(address => bool) private hasVoted;
-
     // Mapping to store voter names to their addresses
     mapping(string => address) private voterNames;
 
@@ -21,7 +15,7 @@ contract TuringVoting is ERC20 {
     uint256 private constant TuringUnit = 10**18;
 
     // Array of student addresses
-    address[19] private studentAddresses;
+    address[20] private studentAddresses;
 
     // Modifier to restrict access to authorized users (deployer or teacher)
     modifier onlyAuthorized() {
@@ -54,6 +48,7 @@ contract TuringVoting is ERC20 {
 
         // Initialize student addresses
         studentAddresses = [
+            0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266,
             0x70997970C51812dc3A010C7d01b50e0d17dc79C8,
             0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC,
             0x90F79bf6EB2c4f870365E785982E1f101E93b906,
@@ -76,6 +71,7 @@ contract TuringVoting is ERC20 {
         ];
 
         // Initialize voter names to addresses
+        voterNames["nome0"] = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
         voterNames["nome1"] = 0x70997970C51812dc3A010C7d01b50e0d17dc79C8;
         voterNames["nome2"] = 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC;
         voterNames["nome3"] = 0x90F79bf6EB2c4f870365E785982E1f101E93b906;
@@ -99,8 +95,8 @@ contract TuringVoting is ERC20 {
 
     // Function to issue tokens (only authorized users can call this)
     function issueToken(string memory codinome, uint256 amount) public onlyAuthorized {
-        require(codinomes[codinome] != address(0), "Invalid codinome!");
-        _mint(codinomes[codinome], amount);
+        require(voterNames[codinome] != address(0), "Invalid codinome!");
+        _mint(voterNames[codinome], amount);
     }
 
     // Function to vote
@@ -108,12 +104,10 @@ contract TuringVoting is ERC20 {
         address voterAddress = voterNames[voterName];
         require(voterAddress != address(0), "Invalid voter name!");
         require(msg.sender != voterAddress, "You cannot vote for yourself!");
-        require(!hasVoted[msg.sender], "You have already voted!");
         require(amount <= 2 * TuringUnit, "Vote amount exceeds limit!");
 
         _mint(voterAddress, amount);
-        _mint(msg.sender, (2 * TuringUnit) / 10); // 0.2 Turing
-        hasVoted[msg.sender] = true;
+        _mint(msg.sender, (2 * TuringUnit) / 10.0); // 0.2 Turing
     }
 
     // Function to enable voting (only authorized users can call this)

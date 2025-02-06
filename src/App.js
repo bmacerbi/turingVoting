@@ -4,7 +4,7 @@ import './App.css';
 import TuringVotingABI from './TuringVoting.json';
 import { Button, TextField, Typography, Container, Box, MenuItem, Select, FormControl, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
-const contractAddress = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
+const contractAddress = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
 const abi = TuringVotingABI.abi;
 
 function App() {
@@ -19,7 +19,7 @@ function App() {
 
   // List of voter names (replace with your actual names)
   const voterNames = [
-    "nome1", "nome2", "nome3", "nome4", "nome5",
+    "nome0","nome1", "nome2", "nome3", "nome4", "nome5",
     "nome6", "nome7", "nome8", "nome9", "nome10",
     "nome11", "nome12", "nome13", "nome14", "nome15",
     "nome16", "nome17", "nome18", "nome19"
@@ -57,7 +57,7 @@ function App() {
     init();
   }, []);
 
-  const fetchVoterBalances = async (contract, voterNames) => {
+  const fetchVoterBalances = async (contract) => {
     const balances = [];
 
     for (const name of voterNames) {
@@ -109,6 +109,20 @@ function App() {
     }
   };
 
+  const issueToken = async () => {
+    if (!contract || !voterName || !amount) return;
+    try {
+      const tx = await contract.issueToken(voterName, ethers.parseEther(amount));
+      await tx.wait();
+      alert('Issue tokens successful!');
+
+      fetchVoterBalances(contract);
+    } catch (error) {
+      console.error('Error voting:', error);
+      alert(`Failed to vote: ${error.message}`);
+    }
+  }
+
   return (
     <Container>
       <Box my={4}>
@@ -147,6 +161,10 @@ function App() {
             Vote
           </Button>
         </Box>
+
+        <Button variant="contained" onClick={issueToken} sx={{ backgroundColor: '#4caf50', '&:hover': { backgroundColor: '#45a049' } }}>
+          Issue Tokens
+        </Button>
 
         <Box my={2}>
           <Button variant="contained" color="secondary" onClick={() => toggleVoting(!votingEnabled)}>
