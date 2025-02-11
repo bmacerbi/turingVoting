@@ -50,14 +50,6 @@ function App() {
       }
     }
     init();
-
-    const intervalId = setInterval(() => {
-      if (contract) {
-        fetchVoterBalances(contract, voterNames);
-      }
-    }, 30000); 
-
-    return () => clearInterval(intervalId);
   }, [contract]); 
 
   const fetchVoterBalances = async (contract, names) => {
