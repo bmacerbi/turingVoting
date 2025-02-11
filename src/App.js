@@ -16,14 +16,7 @@ function App() {
   const [amount, setAmount] = useState('');
   const [votingEnabled, setVotingEnabled] = useState(false);
   const [voterBalances, setVoterBalances] = useState([]);
-
-  // List of voter names (replace with your actual names)
-  const voterNames = [
-    "nome1", "nome2", "nome3", "nome4", "nome5",
-    "nome6", "nome7", "nome8", "nome9", "nome10",
-    "nome11", "nome12", "nome13", "nome14", "nome15",
-    "nome16", "nome17", "nome18", "nome19"
-  ];
+  const [voterNames, setVoterNames] = useState([]);
 
   useEffect(() => {
     async function init() {
@@ -43,8 +36,10 @@ function App() {
           const isVotingEnabled = await contract.votingEnabled();
           setVotingEnabled(isVotingEnabled);
 
-          // Fetch balances for all voters
-          fetchVoterBalances(contract);
+          const names = await contract.getVoterNames();
+          setVoterNames(names);
+
+          fetchVoterBalances(contract, names);
 
           console.log('Initialization successful:', { provider, signer, contract, account });
         } catch (error) {
@@ -58,17 +53,17 @@ function App() {
 
     const intervalId = setInterval(() => {
       if (contract) {
-        fetchVoterBalances(contract);
+        fetchVoterBalances(contract, voterNames);
       }
     }, 30000); 
 
     return () => clearInterval(intervalId);
   }, [contract]); 
 
-  const fetchVoterBalances = async (contract) => {
+  const fetchVoterBalances = async (contract, names) => {
     const balances = [];
 
-    for (const name of voterNames) {
+    for (const name of names) {
         try {
             const nameAddress = await contract.getVoterAddress(name);
 
@@ -95,7 +90,7 @@ function App() {
       await tx.wait();
       alert('Vote successful!');
 
-      fetchVoterBalances(contract);
+      fetchVoterBalances(contract, voterNames);
     } catch (error) {
       console.error('Error voting:', error);
       alert(`Failed to vote: ${error.message}`);
@@ -122,7 +117,7 @@ function App() {
       await tx.wait();
       alert('Issue tokens successful!');
 
-      fetchVoterBalances(contract);
+      fetchVoterBalances(contract, voterNames);
     } catch (error) {
       console.error('Error voting:', error);
       alert(`Failed to vote: ${error.message}`);

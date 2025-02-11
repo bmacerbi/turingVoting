@@ -11,6 +11,9 @@ contract TuringVoting is ERC20 {
     // Mapping to store voter names to their addresses
     mapping(string => address) private voterNames;
 
+    // Mapping to track if a voter has already voted for a specific target
+    mapping(address => mapping(address => bool)) private hasVoted;
+
     // Constant for Turing unit
     uint256 private constant TuringUnit = 10**18;
 
@@ -103,9 +106,13 @@ contract TuringVoting is ERC20 {
         require(voterAddress != address(0), "Invalid voter name!");
         require(msg.sender != voterAddress, "You cannot vote for yourself!");
         require(amount <= 2 * TuringUnit, "Vote amount exceeds limit!");
+        require(!hasVoted[msg.sender][voterAddress], "You have already voted for this user!");
+
+        // Mark that the sender has voted for the target
+        hasVoted[msg.sender][voterAddress] = true;
 
         _mint(voterAddress, amount);
-        _mint(msg.sender, (2 * TuringUnit) / 10.0); // 0.2 Turing
+        _mint(msg.sender, (2 * TuringUnit) / 10); // 0.2 Turing
     }
 
     // Function to enable voting (only authorized users can call this)
@@ -121,5 +128,29 @@ contract TuringVoting is ERC20 {
     // Function to get the address of a voter by their name
     function getVoterAddress(string memory voterName) public view returns (address) {
         return voterNames[voterName];
+    }
+
+    function getVoterNames() public view returns (string[] memory) {
+        string[] memory names = new string[](19);
+        names[0] = "nome1";
+        names[1] = "nome2";
+        names[2] = "nome3";
+        names[3] = "nome4";
+        names[4] = "nome5";
+        names[5] = "nome6";
+        names[6] = "nome7";
+        names[7] = "nome8";
+        names[8] = "nome9";
+        names[9] = "nome10";
+        names[10] = "nome11";
+        names[11] = "nome12";
+        names[12] = "nome13";
+        names[13] = "nome14";
+        names[14] = "nome15";
+        names[15] = "nome16";
+        names[16] = "nome17";
+        names[17] = "nome18";
+        names[18] = "nome19";
+        return names;
     }
 }
