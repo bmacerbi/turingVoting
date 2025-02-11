@@ -19,7 +19,7 @@ function App() {
 
   // List of voter names (replace with your actual names)
   const voterNames = [
-    "nome0","nome1", "nome2", "nome3", "nome4", "nome5",
+    "nome1", "nome2", "nome3", "nome4", "nome5",
     "nome6", "nome7", "nome8", "nome9", "nome10",
     "nome11", "nome12", "nome13", "nome14", "nome15",
     "nome16", "nome17", "nome18", "nome19"
@@ -55,32 +55,38 @@ function App() {
       }
     }
     init();
-  }, []);
+
+    const intervalId = setInterval(() => {
+      if (contract) {
+        fetchVoterBalances(contract);
+      }
+    }, 30000); 
+
+    return () => clearInterval(intervalId);
+  }, [contract]); 
 
   const fetchVoterBalances = async (contract) => {
     const balances = [];
 
     for (const name of voterNames) {
         try {
-            // Call the smart contract function to get the voter's address
             const nameAddress = await contract.getVoterAddress(name);
 
-            // Ensure the address is valid before fetching balance
             if (nameAddress === "0x0000000000000000000000000000000000000000") {
                 throw new Error("Invalid address for voter name: " + name);
             }
 
-            // Fetch balance
             const balance = await contract.balanceOf(nameAddress);
-            balances.push({ name, balance: ethers.formatEther(balance) });
+            const formattedBalance = ethers.formatEther(balance); 
+            balances.push({ name, balance: formattedBalance });
         } catch (error) {
             console.error(`Error fetching balance for ${name}:`, error);
-            balances.push({ name, balance: "N/A" });
+            balances.push({ name, balance: "0" }); // Set "0" to ensure sorting works
         }
     }
-
+    balances.sort((a, b) => parseFloat(b.balance) - parseFloat(a.balance));
     setVoterBalances(balances);
-  };
+};
 
   const handleVote = async () => {
     if (!contract || !voterName || !amount) return;
